@@ -34,8 +34,3 @@ function M.get(c, opts)
 end
 
 return M
-  hi("TelescopeResultsGitStatus", { fg = colors.base0A })
-  hi("TelescopeResultsGitBranch", { fg = colors.base0B })
-end
-
-return M

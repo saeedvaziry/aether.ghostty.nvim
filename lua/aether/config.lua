@@ -7,6 +7,12 @@ M.defaults = {
   name = "aether", -- The name of the colorscheme (useful for creating variants)
   transparent = false, -- Enable this to disable setting the background color
   terminal_colors = true, -- Configure the colors used when opening a `:terminal` in Neovim
+
+  -- Sync with terminal emulator's color palette (e.g., Ghostty, iTerm2, Kitty)
+  -- When true, queries terminal for its colors via OSC escape sequences
+  -- This allows Neovim to automatically match your terminal's theme
+  sync_terminal = false,
+
   styles = {
     -- Style to be applied to different syntax groups
     -- Value is any valid attr-list value for `:help nvim_set_hl`

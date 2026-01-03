@@ -204,6 +204,48 @@ local function setup_reload_command()
   end, { desc = "Manually reload aether colorscheme" })
 end
 
+--- Setup user command for syncing with Ghostty terminal colors
+local function setup_sync_terminal_command()
+  vim.api.nvim_create_user_command("AetherSyncTerminal", function()
+    local terminal = require("aether.terminal")
+
+    local theme_name = terminal.get_theme_name()
+    if not theme_name then
+      vim.notify("Could not find Ghostty theme in config", vim.log.levels.WARN)
+      return
+    end
+
+    local base16 = terminal.get_base16()
+    if not base16 then
+      vim.notify("Could not read Ghostty theme: " .. theme_name, vim.log.levels.WARN)
+      return
+    end
+
+    -- Get current config options
+    local aether_config = require("aether.config")
+    local opts = vim.deepcopy(aether_config.options or aether_config.defaults)
+
+    -- Merge Ghostty colors
+    opts.colors = vim.tbl_deep_extend("force", base16, opts.colors or {})
+
+    -- Clear and reload
+    clear_aether_modules(true)
+    clear_highlights()
+
+    local ok, aether = pcall(require, "aether")
+    if not ok then
+      vim.notify("Failed to load aether.nvim", vim.log.levels.ERROR)
+      return
+    end
+
+    aether.setup(opts)
+    aether.load()
+
+    trigger_post_reload_events()
+    vim.notify("aether.nvim synced with Ghostty theme: " .. theme_name, vim.log.levels.INFO)
+  end, { desc = "Sync aether colorscheme with Ghostty terminal theme" })
+end
+
 --- Initialize hot reload functionality
 --- Sets up autocmds and user commands for automatic theme reloading
 function M.setup()
@@ -211,6 +253,7 @@ function M.setup()
   setup_dev_file_watcher()
   setup_external_config_watcher()
   setup_reload_command()
+  setup_sync_terminal_command()
 end
 
 return M
